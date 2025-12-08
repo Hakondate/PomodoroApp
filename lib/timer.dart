@@ -11,6 +11,30 @@ class Timer extends StatefulWidget {
 }
 
 class _TimerState extends State<Timer> {
+  final CountDownController _controller = CountDownController();
+  bool _isRunning = false; // ボタン表示／状態保持用
+
+  void _startPause() {
+    setState(() {
+      if (_isRunning) {
+        _controller.pause();
+        _isRunning = false;
+      } else {
+        // 初回や一時停止からの再開
+        _controller.start();
+        _isRunning = true;
+      }
+    });
+  }
+
+  void _reset() {
+    _controller.restart(duration: 25 * 60); // 再起動して25分に
+    setState(() {
+      _controller.pause();
+      _isRunning = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,9 +47,9 @@ class _TimerState extends State<Timer> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             CircularCountDownTimer(
-              duration: 20,
+              duration: 25 * 60,
               initialDuration: 0,
-              controller: CountDownController(),
+              controller: _controller,
               width: MediaQuery.of(context).size.width / 2,
               height: MediaQuery.of(context).size.height / 2,
               ringColor: Colors.grey[300]!,
@@ -40,17 +64,34 @@ class _TimerState extends State<Timer> {
                   fontSize: 33.0,
                   color: Colors.white,
                   fontWeight: FontWeight.bold),
-              textFormat: CountdownTextFormat.S,
-              isReverse: false,
-              isReverseAnimation: false,
+              textFormat: CountdownTextFormat.MM_SS,
+              isReverse: true,
+              isReverseAnimation: true,
               isTimerTextShown: true,
-              autoStart: true,
+              autoStart: false,
               onStart: () {
                 // debugPrint('Countdown Started');
               },
               onComplete: () {
                 // debugPrint('Countdown Ended');
               },
+            ),
+            const SizedBox(height: 32),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: _startPause,
+                  icon: Icon(_isRunning ? Icons.pause : Icons.play_arrow),
+                  label: Text(_isRunning ? 'Pause' : 'Start'),
+                ),
+                const SizedBox(width: 16),
+                OutlinedButton.icon(
+                  onPressed: _reset,
+                  icon: const Icon(Icons.replay),
+                  label: const Text('Reset'),
+                ),
+              ],
             ),
           ],
         ),
