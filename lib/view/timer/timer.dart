@@ -12,27 +12,36 @@ class Timer extends StatefulWidget {
 
 class _TimerState extends State<Timer> {
   final CountDownController _controller = CountDownController();
+  bool _hasStarted = false; // タイマー開始済みかどうかの状態保持用
   bool _isRunning = false; // ボタン表示／状態保持用
+  bool _isworking = true; // 作業中か休憩中かの状態保持用
 
   void _startPause() {
     setState(() {
       if (_isRunning) {
         _controller.pause();
         _isRunning = false;
-      } else {
-        // 初回や一時停止からの再開
+      } else if (!_hasStarted) {
+        // 初回起動
         _controller.start();
+        _isRunning = true;
+        _hasStarted = true;
+      } else {
+        // 一時停止からの再開
+        _controller.resume();
         _isRunning = true;
       }
     });
   }
 
-  void _reset() {
-    _controller.restart(duration: 25 * 60); // 再起動して25分に
-    setState(() {
-      _controller.pause();
-      _isRunning = false;
-    });
+  void _working() {
+    if (_isworking) {
+      _controller.restart(duration: 5 * 60);
+      _isworking = false;
+    } else {
+      _controller.restart(duration: 25 * 60);
+      _isworking = true;
+    }
   }
 
   @override
@@ -87,7 +96,7 @@ class _TimerState extends State<Timer> {
                 ),
                 const SizedBox(width: 16),
                 OutlinedButton.icon(
-                  onPressed: _reset,
+                  onPressed: _working,
                   icon: const Icon(Icons.replay),
                   label: const Text('Reset'),
                 ),
