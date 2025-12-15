@@ -17,9 +17,7 @@ T _$identity<T>(T value) => value;
 mixin _$TaskModel {
 //id
   int get id; //タイトル
-  String get title; //ジャンル
-//required int  genre,
-//完了状態
+  String get title; //完了状態
   bool get isCompleted;
 
   /// Create a copy of TaskModel
@@ -94,7 +92,7 @@ class _$TaskModelCopyWithImpl<$Res> implements $TaskModelCopyWith<$Res> {
 
 class _TaskModel implements TaskModel {
   const _TaskModel(
-      {required this.id, required this.title, required this.isCompleted});
+      {required this.id, required this.title, this.isCompleted = false});
 
 //id
   @override
@@ -102,10 +100,9 @@ class _TaskModel implements TaskModel {
 //タイトル
   @override
   final String title;
-//ジャンル
-//required int  genre,
 //完了状態
   @override
+  @JsonKey()
   final bool isCompleted;
 
   /// Create a copy of TaskModel
