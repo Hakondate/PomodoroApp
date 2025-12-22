@@ -6,7 +6,7 @@ class Timer extends StatefulWidget {
 
   final String title;
   static const int workTime = 25 * 60;
-  static const int breakTime = 1 * 60;
+  static const int breakTime = 5 * 60;
 
   @override
   State<Timer> createState() => _TimerState();
@@ -42,12 +42,10 @@ class _TimerState extends State<Timer> {
         _controller.restart(duration: Timer.breakTime);
         _isworking = false;
         _isRunning = true;
-        _hasStarted = false;
       } else {
         _controller.restart(duration: Timer.workTime);
         _isworking = true;
         _isRunning = true;
-        _hasStarted = false;
       }
     });
   }
@@ -56,7 +54,6 @@ class _TimerState extends State<Timer> {
     setState(() {
       _isworking = !_isworking;
       _isRunning = true;
-      _hasStarted = true;
     });
   }
 
