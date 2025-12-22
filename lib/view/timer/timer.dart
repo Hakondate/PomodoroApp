@@ -5,6 +5,8 @@ class Timer extends StatefulWidget {
   const Timer({super.key, required this.title});
 
   final String title;
+  static const int workTime = 25 * 60;
+  static const int breakTime = 1 * 60;
 
   @override
   State<Timer> createState() => _TimerState();
@@ -37,28 +39,24 @@ class _TimerState extends State<Timer> {
   void _working() {
     setState(() {
       if (_isworking) {
-        _controller.restart(duration: 5 * 60);
+        _controller.restart(duration: Timer.breakTime);
         _isworking = false;
         _isRunning = true;
+        _hasStarted = false;
       } else {
-        _controller.restart(duration: 25 * 60);
+        _controller.restart(duration: Timer.workTime);
         _isworking = true;
         _isRunning = true;
+        _hasStarted = false;
       }
     });
   }
 
   void _onComplete() {
     setState(() {
-      if (_isworking) {
-        // 25分終わり → 5分開始
-        _isworking = false;
-        _controller.restart(duration: 5 * 60);
-      } else {
-        // 5分終わり → 25分開始
-        _isworking = true;
-        _controller.restart(duration: 25 * 60);
-      }
+      _isworking = !_isworking;
+      _isRunning = true;
+      _hasStarted = true;
     });
   }
 
@@ -74,16 +72,17 @@ class _TimerState extends State<Timer> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             CircularCountDownTimer(
-              duration: 25 * 60,
+              key: ValueKey(_isworking),
+              duration: _isworking ? Timer.workTime : Timer.breakTime,
               initialDuration: 0,
               controller: _controller,
               width: MediaQuery.of(context).size.width / 2,
               height: MediaQuery.of(context).size.height / 2,
               ringColor: Colors.grey[300]!,
               ringGradient: null,
-              fillColor: Colors.purpleAccent[100]!,
+              fillColor: Color(_isworking ? 0xFFF2856A : 0xFF6A75F2),
               fillGradient: null,
-              backgroundColor: Colors.purple[500],
+              backgroundColor: Color(_isworking ? 0xFFB42A00 : 0xFF0003B4),
               backgroundGradient: null,
               strokeWidth: 20.0,
               strokeCap: StrokeCap.round,
@@ -93,9 +92,9 @@ class _TimerState extends State<Timer> {
                   fontWeight: FontWeight.bold),
               textFormat: CountdownTextFormat.MM_SS,
               isReverse: true,
-              isReverseAnimation: true,
+              isReverseAnimation: _isworking,
               isTimerTextShown: true,
-              autoStart: false,
+              autoStart: _isRunning,
               onStart: () {
                 // debugPrint('Countdown Started');
               },
