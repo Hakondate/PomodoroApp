@@ -35,13 +35,31 @@ class _TimerState extends State<Timer> {
   }
 
   void _working() {
-    if (_isworking) {
-      _controller.restart(duration: 5 * 60);
-      _isworking = false;
-    } else {
-      _controller.restart(duration: 25 * 60);
-      _isworking = true;
-    }
+    setState(() {
+      if (_isworking) {
+        _controller.restart(duration: 5 * 60);
+        _isworking = false;
+        _isRunning = true;
+      } else {
+        _controller.restart(duration: 25 * 60);
+        _isworking = true;
+        _isRunning = true;
+      }
+    });
+  }
+
+  void _onComplete() {
+    setState(() {
+      if (_isworking) {
+        // 25分終わり → 5分開始
+        _isworking = false;
+        _controller.restart(duration: 5 * 60);
+      } else {
+        // 5分終わり → 25分開始
+        _isworking = true;
+        _controller.restart(duration: 25 * 60);
+      }
+    });
   }
 
   @override
@@ -82,7 +100,7 @@ class _TimerState extends State<Timer> {
                 // debugPrint('Countdown Started');
               },
               onComplete: () {
-                // debugPrint('Countdown Ended');
+                _onComplete();
               },
             ),
             const SizedBox(height: 32),
@@ -92,13 +110,17 @@ class _TimerState extends State<Timer> {
                 ElevatedButton.icon(
                   onPressed: _startPause,
                   icon: Icon(_isRunning ? Icons.pause : Icons.play_arrow),
-                  label: Text(_isRunning ? 'Pause' : 'Start'),
+                  label: Text(_isRunning
+                      ? '一時停止'
+                      : _hasStarted
+                          ? '再開'
+                          : '開始'),
                 ),
                 const SizedBox(width: 16),
-                OutlinedButton.icon(
+                ElevatedButton.icon(
                   onPressed: _working,
-                  icon: const Icon(Icons.replay),
-                  label: const Text('Reset'),
+                  icon: Icon(_isworking ? Icons.coffee : Icons.work),
+                  label: Text(_isworking ? '休憩する' : '作業を始める'),
                 ),
               ],
             ),
