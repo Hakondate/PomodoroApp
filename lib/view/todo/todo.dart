@@ -13,6 +13,7 @@ class _TodoFunctionState extends State<TodoFunction> {
   TaskModel? currentTask;
   final List<TaskModel> tasks = [];
   int nextId = 1;
+  bool showCompleted = false;
 
   // タスク完了処理
   void completeCurrentTask() {
@@ -30,12 +31,45 @@ class _TodoFunctionState extends State<TodoFunction> {
   }
 
   // タスク追加
-  void addTask() {
+  void addTask() async {
+    final TextEditingController controller = TextEditingController();
+    final String? title = await showDialog<String>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('タスクを追加'),
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            decoration: const InputDecoration(
+              hintText: 'タスク名を入力',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('キャンセル'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (controller.text.trim().isNotEmpty) {
+                  Navigator.pop(context, controller.text.trim());
+                }
+              },
+              child: const Text('追加'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (title == null) return;
+
     setState(() {
       tasks.add(
         TaskModel(
           id: nextId++,
-          title: '新しいタスク',
+          title: title,
           isCompleted: false,
         ),
       );
@@ -44,6 +78,8 @@ class _TodoFunctionState extends State<TodoFunction> {
 
   @override
   Widget build(BuildContext context) {
+    final visibleTasks =
+        tasks.where((t) => t.isCompleted == showCompleted).toList();
     return Container(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -77,23 +113,91 @@ class _TodoFunctionState extends State<TodoFunction> {
           const SizedBox(height: 16),
 
           // タスクリスト
-          TaskList(
-            tasks: tasks.where((t) => !t.isCompleted).toList(),
-            onTap: (task) {
-              setState(() {
-                currentTask = task;
-              });
-            },
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      showCompleted = false;
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    decoration: BoxDecoration(
+                      color: showCompleted ? Colors.grey[300] : Colors.orange,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(8),
+                      ),
+                    ),
+                    child: const Center(
+                      child: Text(
+                        '未着手',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      showCompleted = true;
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    decoration: BoxDecoration(
+                      color: showCompleted ? Colors.orange : Colors.grey[300],
+                      borderRadius: const BorderRadius.only(
+                        topRight: Radius.circular(8),
+                      ),
+                    ),
+                    child: const Center(
+                      child: Text(
+                        '完了',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFF3E0),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: TaskList(
+              tasks: visibleTasks,
+              onTap: (task) {
+                if (!showCompleted) {
+                  setState(() {
+                    currentTask = task;
+                  });
+                }
+              },
+            ),
           ),
 
-          const SizedBox(height: 16),
-
           // タスク追加ボタン
-          Center(
-            child: ElevatedButton.icon(
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+              ),
               onPressed: addTask,
-              icon: const Icon(Icons.add),
-              label: const Text('タスク追加'),
+              child: const Text(
+                '追加する',
+                style: TextStyle(fontSize: 16, color: Colors.white),
+              ),
             ),
           ),
         ],
