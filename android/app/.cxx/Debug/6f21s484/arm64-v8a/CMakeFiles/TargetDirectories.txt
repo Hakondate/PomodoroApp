@@ -1,0 +1,2 @@
+C:/Users/obcor/code/PomodoroApp/android/app/.cxx/Debug/6f21s484/arm64-v8a/CMakeFiles/edit_cache.dir
+C:/Users/obcor/code/PomodoroApp/android/app/.cxx/Debug/6f21s484/arm64-v8a/CMakeFiles/rebuild_cache.dir
