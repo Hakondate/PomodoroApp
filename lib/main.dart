@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pomodoro_app/view/todo/todo.dart';
-import 'view/timer/timer.dart';
+import 'package:pomodoro_app/view/timer/timer.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,8 +14,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         useMaterial3: true,
       ),
       home: Scaffold(
@@ -30,7 +31,6 @@ class MyApp extends StatelessWidget {
           ],
         ),
       ),
-      debugShowCheckedModeBanner: false,
     );
   }
 }

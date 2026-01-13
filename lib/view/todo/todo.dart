@@ -46,12 +46,6 @@ class _TodoFunctionState extends State<TodoFunction> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.grey[100],
-        border: const Border(
-          top: BorderSide(color: Colors.grey),
-        ),
-      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
